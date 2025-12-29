@@ -103,9 +103,9 @@ const server = http.createServer((req, res) => {
 // ========== ЗАПУСК СЕРВЕРА ==========
 server.listen(LOCAL_PORT, BIND_HOST, () => {
     console.log('='.repeat(60));
-    console.log(`✅ OpenAI-compatible proxy server is running`);
-    console.log(`🌐 Local address: http://${BIND_HOST}:${LOCAL_PORT}`);
-    console.log(`🔒 Proxy: ${PROXY_URL.replace(/:[^:@]+@/, ':***@')}`);
-    console.log(`🎯 Target API: ${process.env.API_URL}`);
+    console.log(`OpenAI-compatible proxy server is running`);
+    console.log(`Local address: http://${BIND_HOST}:${LOCAL_PORT}`);
+    console.log(`Proxy type: ${proxyUrl.protocol.replace(':', '')}`);
+    console.log(`Target API: ${process.env.API_URL}`);
     console.log('='.repeat(60));
 });
