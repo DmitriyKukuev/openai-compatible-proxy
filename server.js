@@ -63,7 +63,9 @@ const LOCAL_PORT = process.env.LOCAL_PORT || 8888;
 const BIND_HOST = process.env.BIND_HOST || '127.0.0.1';
 
 // ========== СОЗДАНИЕ PROXY АГЕНТА ==========
-const agent = new ProxyAgent(PROXY_URL);
+const agent = new ProxyAgent({
+    getProxyForUrl: () => PROXY_URL
+});
 
 // ========== HTTP СЕРВЕР ==========
 const server = http.createServer((req, res) => {
