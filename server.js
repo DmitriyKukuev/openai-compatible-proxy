@@ -1,7 +1,7 @@
 require('dotenv').config();
 const http = require('http');
 const https = require('https');
-const { SocksProxyAgent } = require('socks-proxy-agent');
+const { ProxyAgent } = require('proxy-agent');
 const { URL } = require('url');
 
 // ========== ЗАГРУЗКА И ВАЛИДАЦИЯ КОНФИГУРАЦИИ ==========
@@ -10,6 +10,24 @@ const { URL } = require('url');
 if (!process.env.PROXY_URL) {
     console.error('❌ ОШИБКА: Переменная PROXY_URL не задана в .env файле');
     console.error('   PROXY_URL является обязательной для работы прокси-сервера');
+    process.exit(1);
+}
+
+// Валидация PROXY_URL
+let proxyUrl;
+try {
+    proxyUrl = new URL(process.env.PROXY_URL);
+} catch (err) {
+    console.error('❌ ОШИБКА: Невалидный PROXY_URL:', process.env.PROXY_URL);
+    console.error('   Должен быть валидным URL');
+    process.exit(1);
+}
+
+// Проверка поддерживаемых протоколов прокси
+const supportedProxyProtocols = ['http:', 'https:', 'socks:', 'socks4:', 'socks5:'];
+if (!supportedProxyProtocols.includes(proxyUrl.protocol)) {
+    console.error('❌ ОШИБКА: Неподдерживаемый протокол прокси:', proxyUrl.protocol);
+    console.error('   Поддерживаемые протоколы: http://, https://, socks://, socks4://, socks5://');
     process.exit(1);
 }
 
@@ -44,8 +62,8 @@ const TARGET_PORT = targetUrl.port || 443;
 const LOCAL_PORT = process.env.LOCAL_PORT || 8888;
 const BIND_HOST = process.env.BIND_HOST || '127.0.0.1';
 
-// ========== СОЗДАНИЕ SOCKS5 АГЕНТА ==========
-const agent = new SocksProxyAgent(PROXY_URL);
+// ========== СОЗДАНИЕ PROXY АГЕНТА ==========
+const agent = new ProxyAgent(PROXY_URL);
 
 // ========== HTTP СЕРВЕР ==========
 const server = http.createServer((req, res) => {
@@ -87,7 +105,7 @@ server.listen(LOCAL_PORT, BIND_HOST, () => {
     console.log('='.repeat(60));
     console.log(`✅ OpenAI-compatible proxy server is running`);
     console.log(`🌐 Local address: http://${BIND_HOST}:${LOCAL_PORT}`);
-    console.log(`🔒 SOCKS5 proxy: ${PROXY_URL.replace(/:[^:@]+@/, ':***@')}`);
+    console.log(`🔒 Proxy: ${PROXY_URL.replace(/:[^:@]+@/, ':***@')}`);
     console.log(`🎯 Target API: ${process.env.API_URL}`);
     console.log('='.repeat(60));
 });
