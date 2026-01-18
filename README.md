@@ -8,14 +8,14 @@
 
 **Минимальный запуск:**
 ```bash
-npx github:DmitriyKukuev/openai-compatible-proxy \
+npx -y github:DmitriyKukuev/openai-compatible-proxy \
   --proxy-url "socks5://username:password@proxy-host:port" \
   --api-url "https://api.z.ai/api/coding/paas/v4"
 ```
 
 **Запуск со всеми аргументами:**
 ```bash
-npx github:DmitriyKukuev/openai-compatible-proxy \
+npx -y github:DmitriyKukuev/openai-compatible-proxy \
   --proxy-url "socks5://username:password@proxy-host:port" \
   --api-url "https://api.z.ai/api/coding/paas/v4" \
   --port 8888 \
