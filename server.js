@@ -3,13 +3,34 @@ const http = require('http');
 const https = require('https');
 const { ProxyAgent } = require('proxy-agent');
 const { URL } = require('url');
+const { program } = require('commander');
+
+// ========== CLI АРГУМЕНТЫ ==========
+
+program
+  .name('openai-compatible-proxy')
+  .description('Universal OpenAI-compatible API proxy through SOCKS5')
+  .version('1.0.0')
+  .option('--proxy-url <url>', 'SOCKS5 proxy URL (e.g., socks5://username:password@proxy-host:port)')
+  .option('--api-url <url>', 'Target API URL (e.g., https://api.z.ai/api/coding/paas/v4)')
+  .option('--port <port>', 'Local port to bind to', '8888')
+  .option('--host <host>', 'Host to bind to', '127.0.0.1')
+  .parse();
+
+const options = program.opts();
+
+// CLI аргументы имеют приоритет над .env переменными
+if (options.proxyUrl) process.env.PROXY_URL = options.proxyUrl;
+if (options.apiUrl) process.env.API_URL = options.apiUrl;
+if (options.port) process.env.LOCAL_PORT = options.port;
+if (options.host) process.env.BIND_HOST = options.host;
 
 // ========== ЗАГРУЗКА И ВАЛИДАЦИЯ КОНФИГУРАЦИИ ==========
 
 // Проверка обязательных переменных
 if (!process.env.PROXY_URL) {
-    console.error('❌ ОШИБКА: Переменная PROXY_URL не задана в .env файле');
-    console.error('   PROXY_URL является обязательной для работы прокси-сервера');
+    console.error('❌ ОШИБКА: Переменная PROXY_URL не задана');
+    console.error('   Укажите её через --proxy-url аргумент или в .env файле');
     process.exit(1);
 }
 
@@ -32,8 +53,8 @@ if (!supportedProxyProtocols.includes(proxyUrl.protocol)) {
 }
 
 if (!process.env.API_URL) {
-    console.error('❌ ОШИБКА: Переменная API_URL не задана в .env файле');
-    console.error('   API_URL является обязательной для работы прокси-сервера');
+    console.error('❌ ОШИБКА: Переменная API_URL не задана');
+    console.error('   Укажите её через --api-url аргумент или в .env файле');
     process.exit(1);
 }
 
